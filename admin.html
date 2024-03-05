@@ -222,20 +222,27 @@
             var productPrice = document.getElementById('proPriceReg').value;
             var productColor = document.getElementById('proColorReg').value;
 
-            //save product details
-            const productRef = ref(database, 'products');
-            const newProductRef = push(productRef); // Generate a new unique key
-            const productId = newProductRef.key;
+            if (!productName || !productPrice || !productColor) {
+                alert("Please Complete the Form!");
+                document.getElementById('closeRegFormButton').click();
+            } else {
+                //save product details
+                const productRef = ref(database, 'products');
+                const newProductRef = push(productRef); // Generate a new unique key
+                const productId = newProductRef.key;
 
-            set(newProductRef, {
-                productId: productId,
-                productName: productName,
-                productPrice: productPrice,
-                productColor: productColor
-            });
+                set(newProductRef, {
+                    productId: productId,
+                    productName: productName,
+                    productPrice: productPrice,
+                    productColor: productColor
+                });
 
-            alert('Product Added');
-            document.getElementById('closeRegFormButton').click();
+                alert('Product Added');
+                document.getElementById('closeRegFormButton').click();
+            }
+
+            
         })
         /* -- end of save product details in db -- */
 
