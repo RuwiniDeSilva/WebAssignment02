@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+
+    <!--firebase-->
+    <!-- update the version number as needed -->
+    <script defer src="/__/firebase/10.8.1/firebase-app-compat.js"></script>
+    <!-- include only the Firebase features as you need -->
+    <script defer src="/__/firebase/10.8.1/firebase-auth-compat.js"></script>
+    <script defer src="/__/firebase/10.8.1/firebase-database-compat.js"></script>
+    <script defer src="/__/firebase/10.8.1/firebase-firestore-compat.js"></script>
+    <script defer src="/__/firebase/10.8.1/firebase-functions-compat.js"></script>
+    <script defer src="/__/firebase/10.8.1/firebase-messaging-compat.js"></script>
+    <script defer src="/__/firebase/10.8.1/firebase-storage-compat.js"></script>
+    <script defer src="/__/firebase/10.8.1/firebase-analytics-compat.js"></script>
+    <script defer src="/__/firebase/10.8.1/firebase-remote-config-compat.js"></script>
+    <script defer src="/__/firebase/10.8.1/firebase-performance-compat.js"></script>
+    <!-- 
+      initialize the SDK after all desired features are loaded, set useEmulator to false
+      to avoid connecting the SDK to running emulators.
+    -->
+    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
+
+
+    <!--Bootsrtap CSS-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+</head>
+<body class="bodyImageLogin vh-100">
+    <!--Custom CSS-->
+    <style>
+        .bodyImageLogin {
+            background-image: url('https://images.unsplash.com/photo-1497091071254-cc9b2ba7c48a?q=80&w=2074&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'); 
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-size: 100% 100%;
+        }
+
+        .card {
+            border-radius: 1.5rem !important;
+            transition: border-radius 0.3s ease !important;
+        }
+
+        .opacityLogin {
+            opacity: 0.9 !important;
+        }
+    </style>
+    <!--end of Custom CSS-->
+
+    <div class="container-fluid border-0 py-5 opacityLogin">
+        <div class="row">
+            <div class="col"></div>
+            <div class="col">
+                <div class="card my-5">
+                    <div class="card-body">
+                        <!--login form-->
+                        <div class="form mx-5 mt-5 mb-3">
+                            <!--login with username password-->
+                            <div>
+                                <h2 class="mb-4 text-center">Sign In</h2>
+                                <hr class="mb-4">
+                            </div>
+                            <div class="mb-4">
+                                <label for="loginEmail" class="form-label">&nbsp;&nbsp;Email</label>
+                                <input type="email" class="form-control" id="emailInput" placeholder="your-email@gmail.com">
+                            </div>
+                            <div class="mb-4">
+                                <label for="loginPW" class="form-label">&nbsp;&nbsp;Password</label>
+                                <input type="password" class="form-control" id="passwordInput" placeholder="Your Password">
+                            </div>
+                            <div class="text-center mb-4">
+                                <button type="button" class="btn btn-dark px-4" id="loginBtn" onclick="signIn()">Login</button>
+                            </div>
+                            <hr class="mb-4">
+
+                            <!--register link-->
+                            <div class="pt-3">
+                                <div class="row px-2">
+                                    <p class="text-center">
+                                        Don't have an account? &nbsp;
+                                        <a href="register.html" target="_blank" class="text-dark" id="regLink">Register Here</a>
+                                    </p>
+                                </div>   
+                            </div>
+                        </div>
+                        <!--end of login form-->
+                    </div>
+                </div>
+            </div>
+            <div class="col"></div>
+        </div>    
+    </div>
+
+    <!--firebase-->
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getDatabase, set, ref } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBdqJaDKtNdAHEaSX0hlzyRbWk2Ojr8-fY",
+            authDomain: "wa02-new.firebaseapp.com",
+            projectId: "wa02-new",
+            storageBucket: "wa02-new.appspot.com",
+            messagingSenderId: "1071648463564",
+            appId: "1:1071648463564:web:98656bebc4a6e034c88069"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        const auth = getAuth(app);
+
+        const loginBtn = document.getElementById('loginBtn');
+
+        loginBtn.addEventListener('click', (e) => {
+            var email = document.getElementById("emailInput").value;
+            var password = document.getElementById("passwordInput").value;
+
+            signInWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    // Signed in 
+                    console.log('User Logged In!')
+                    const user = userCredential.user;
+
+                    // Redirect to home page
+                    window.location.href = 'home.html';
+
+                })
+                .catch((error) => {
+                    const errorCode = error.code;
+                    const errorMessage = error.message;
+
+                    alert('Invalied Email or Password');
+                });
+        })
+
+    </script>
+    <!--end of firebase-->
+
+
+
+    <!--Bootsrtap JS-->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+</body>
+</html>

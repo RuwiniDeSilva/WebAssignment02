@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+
+    <!--firebase-->
+    <!-- update the version number as needed -->
+    <script defer src="/__/firebase/10.8.1/firebase-app-compat.js"></script>
+    <!-- include only the Firebase features as you need -->
+    <script defer src="/__/firebase/10.8.1/firebase-auth-compat.js"></script>
+    <script defer src="/__/firebase/10.8.1/firebase-database-compat.js"></script>
+    <script defer src="/__/firebase/10.8.1/firebase-firestore-compat.js"></script>
+    <script defer src="/__/firebase/10.8.1/firebase-functions-compat.js"></script>
+    <script defer src="/__/firebase/10.8.1/firebase-messaging-compat.js"></script>
+    <script defer src="/__/firebase/10.8.1/firebase-storage-compat.js"></script>
+    <script defer src="/__/firebase/10.8.1/firebase-analytics-compat.js"></script>
+    <script defer src="/__/firebase/10.8.1/firebase-remote-config-compat.js"></script>
+    <script defer src="/__/firebase/10.8.1/firebase-performance-compat.js"></script>
+    <!-- 
+      initialize the SDK after all desired features are loaded, set useEmulator to false
+      to avoid connecting the SDK to running emulators.
+    -->
+    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
+
+
+    <!--Bootsrtap CSS-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+<body>
+    <!--Custom CSS-->
+    <style>
+        .card {
+            border-radius: 1rem !important;
+            transition: border-radius 0.3s ease !important;
+        }
+
+        .shadow {
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+        }
+
+        /*.opacityLogin {
+            opacity: 0.9 !important;
+        }*/
+    </style>
+    <!--end of Custom CSS-->
+
+    <div class="container-fluid border-0 px-0">
+        <!--navbar-->
+        <nav class="navbar sticky-top navbar-dark bg-dark px-5 shadow">
+            <div class="container-fluid">
+                <span class="navbar-brand mb-0 h1">LOGO</span>
+                <form class="d-flex justify-content-md-end">
+                    <div class="row">
+                        <div class="col">
+                            <a class="btn btn-light px-4" type="submit" href="login.html">Login</a>
+                        </div>
+                        <div class="col">
+                            <a class="btn btn-outline-light px-3" type="submit" href="register.html">SignUp</a>
+                        </div>
+                    </div>  
+                    
+                </form>    
+            </div>
+        </nav>
+        <!--end of navbar-->
+
+        <!--product details-->
+        <div class="row row-cols-1 row-cols-md-3 g-5 mt-1 mx-5 mb-5" id="productCards">
+           
+        </div>
+    </div>
+
+
+
+    <!--firebase-->
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getDatabase, set, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+        // TODO: Add SDKs for Firebase products that you want to use
+        // https://firebase.google.com/docs/web/setup#available-libraries
+      
+        // web app's Firebase configuration
+        const firebaseConfig = {
+          apiKey: "AIzaSyBdqJaDKtNdAHEaSX0hlzyRbWk2Ojr8-fY",
+          authDomain: "wa02-new.firebaseapp.com",
+          projectId: "wa02-new",
+          storageBucket: "wa02-new.appspot.com",
+          messagingSenderId: "1071648463564",
+          appId: "1:1071648463564:web:98656bebc4a6e034c88069",
+          databaseURL: "https://wa02-new-default-rtdb.asia-southeast1.firebasedatabase.app"
+        };
+      
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        const auth = getAuth();
+
+
+        /* -- show product details -- */
+        function renderProduct(product){
+            const productTableBody = document.getElementById('productCards');
+
+            const card = document.createElement('div');
+            card.classList.add('col');
+            card.innerHTML = `
+                <div class="card border-dark border-2 shadow">
+                    <div class="card-body p-5 text-center">
+                        <h5 class="card-title">${product.productName}</h5>
+                        <p class="card-text">Price: LKR ${product.productPrice}</p>
+                        <p class="card-text">Color: ${product.productColor}</p>
+                    </div>
+                </div>
+            `;
+
+            // Append the row to the table body
+            productTableBody.appendChild(card);
+        }
+
+        // Function to fetch and render product details from the database
+        function fetchAndRenderProducts() {
+            const productsRef = ref(database, 'products');
+
+            // Listen for changes to the products node
+            onValue(productsRef, (snapshot) => {
+                const data = snapshot.val();
+
+                // Clear previous product entries
+                document.getElementById('productCards').innerHTML = '';
+
+                // Render each product
+                for (const productId in data) {
+                    renderProduct(data[productId]);
+                }
+            });
+        }
+
+        // Call the function to fetch and render products when the page loads
+        window.onload = fetchAndRenderProducts;
+        
+
+    </script>
+    <!--end of firebase-->
+
+
+    <!--Bootsrtap JS-->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+</body>
+</html>

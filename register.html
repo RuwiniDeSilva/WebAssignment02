@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+
+    <!--firebase-->
+    <!-- update the version number as needed -->
+    <script defer src="/__/firebase/10.8.1/firebase-app-compat.js"></script>
+    <!-- include only the Firebase features as you need -->
+    <script defer src="/__/firebase/10.8.1/firebase-auth-compat.js"></script>
+    <script defer src="/__/firebase/10.8.1/firebase-database-compat.js"></script>
+    <script defer src="/__/firebase/10.8.1/firebase-firestore-compat.js"></script>
+    <!--<script defer src="/__/firebase/10.8.1/firebase-functions-compat.js"></script>
+    <script defer src="/__/firebase/10.8.1/firebase-messaging-compat.js"></script>
+    <script defer src="/__/firebase/10.8.1/firebase-storage-compat.js"></script>
+    <script defer src="/__/firebase/10.8.1/firebase-analytics-compat.js"></script>
+    <script defer src="/__/firebase/10.8.1/firebase-remote-config-compat.js"></script>
+    <script defer src="/__/firebase/10.8.1/firebase-performance-compat.js"></script>-->
+    <!-- 
+      initialize the SDK after all desired features are loaded, set useEmulator to false
+      to avoid connecting the SDK to running emulators.
+    -->
+    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
+    
+
+    <!--Bootsrtap CSS-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+</head>
+<body class="bodyImageRegistration">
+    <!--Custom CSS-->
+    <style>
+        .bodyImageRegistration { 
+        background-image: url('https://wallpapers.com/images/hd/dark-laptop-white-cordless-keyboard-fdtwdtsmuwgo6x0b.jpg'); 
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-size: 100% 100%;    
+    }
+
+    .opacity {
+        opacity: 0.8 !important;
+    }
+    </style>
+    <!--end of Custom CSS-->
+
+    <div class="container-fluid border-0 py-3 opacity">
+        <div class="row">
+            <div class="col-2"></div>
+            <div class="col-8">
+                <div class="card my-5 px-5">
+                    <div class="card-body">
+                        <!--register form-->
+                        <div class="form m-4">
+                            <div>
+                                <h2 class="mb-4 text-center">Sign Up</h2>
+                                <hr class="mb-4">
+                            </div>
+                            <div class="row mb-4">
+                                <div class="col">
+                                    <label for="firstName" class="form-label">&nbsp;&nbsp;First Name</label>
+                                    <input type="text" class="form-control" id="fName" placeholder="Your First Name">
+                                </div>
+                                <div class="col">
+                                    <label for="lastName" class="form-label">&nbsp;&nbsp;Last Name</label>
+                                    <input type="text" class="form-control" id="lName" placeholder="Your Last Name">
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label for="regEmail" class="form-label">&nbsp;&nbsp;Email</label>
+                                <input type="email" class="form-control" id="regEmail" placeholder="your-email@gmail.com">
+                            </div>
+                            <div class="mb-4">
+                                <label for="regPW" class="form-label">&nbsp;&nbsp;Password</label>
+                                <input type="password" class="form-control" id="regPW" placeholder="Your Password">
+                            </div>
+                            <div class="mb-4">
+                                <label for="confirmRegPW" class="form-label">&nbsp;&nbsp;Confirm Password</label>
+                                <input type="password" class="form-control" id="confirmRegPW" placeholder="Confirm Your Password">
+                            </div>
+                            <div class="text-center mb-4">
+                                <button type="button" class="btn btn-dark px-4" id="regBtn">Sign Up</button>
+                            </div>
+                        </div>
+                        <!--end of register form-->
+                    </div>
+                </div>
+            </div>
+            <div class="col-2"></div>
+        </div> 
+    </div>
+
+
+    <!--firebase-->
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getDatabase, set, ref, push } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+        // TODO: Add SDKs for Firebase products that you want to use
+        // https://firebase.google.com/docs/web/setup#available-libraries
+      
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+          apiKey: "AIzaSyBdqJaDKtNdAHEaSX0hlzyRbWk2Ojr8-fY",
+          authDomain: "wa02-new.firebaseapp.com",
+          projectId: "wa02-new",
+          storageBucket: "wa02-new.appspot.com",
+          messagingSenderId: "1071648463564",
+          appId: "1:1071648463564:web:98656bebc4a6e034c88069",
+          databaseURL: "https://wa02-new-default-rtdb.asia-southeast1.firebasedatabase.app"
+        };
+      
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        const auth = getAuth();
+
+
+        const regBtn = document.getElementById('regBtn');
+
+        regBtn.addEventListener('click', (e) => {
+            var fname = document.getElementById('fName').value;
+            var lname = document.getElementById('lName').value;
+            var email = document.getElementById('regEmail').value;
+            var pw = document.getElementById('regPW').value;
+
+            createUserWithEmailAndPassword(auth, email, pw)
+                .then((userCredential) => {
+                    // Signed up 
+                    const user = userCredential.user;
+                    var userId;
+
+                    const userRef = ref(database, 'users/' + user.uid);
+                    set(userRef,{
+                        userId: user.uid,
+                        fname: fname,
+                        lname: lname,
+                        email: email
+                    })
+                    alert('User Created');
+
+                    // Redirect to login page
+                    window.location.href = 'login.html';
+                })
+                .catch((error) => {
+                    const errorCode = error.code;
+                    const errorMessage = error.message;
+
+                    alert('Please Complete the Form');
+                });
+        })
+    </script>
+    <!--end of firebase-->
+
+
+
+    <!--Bootsrtap JS-->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+</body>
+</html>

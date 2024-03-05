@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+
+    <!--firebase-->
+    <!-- update the version number as needed -->
+    <script defer src="/__/firebase/10.8.1/firebase-app-compat.js"></script>
+    <!-- include only the Firebase features as you need -->
+    <script defer src="/__/firebase/10.8.1/firebase-auth-compat.js"></script>
+    <script defer src="/__/firebase/10.8.1/firebase-database-compat.js"></script>
+    <script defer src="/__/firebase/10.8.1/firebase-firestore-compat.js"></script>
+    <script defer src="/__/firebase/10.8.1/firebase-functions-compat.js"></script>
+    <script defer src="/__/firebase/10.8.1/firebase-messaging-compat.js"></script>
+    <script defer src="/__/firebase/10.8.1/firebase-storage-compat.js"></script>
+    <script defer src="/__/firebase/10.8.1/firebase-analytics-compat.js"></script>
+    <script defer src="/__/firebase/10.8.1/firebase-remote-config-compat.js"></script>
+    <script defer src="/__/firebase/10.8.1/firebase-performance-compat.js"></script>
+    <!-- 
+      initialize the SDK after all desired features are loaded, set useEmulator to false
+      to avoid connecting the SDK to running emulators.
+    -->
+    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
+
+
+    <!--Bootsrtap CSS-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+</head>
+
+<body class="bg-light">
+    <!--Custom CSS-->
+    <style>
+        .card {
+            border-radius: 1rem !important;
+            transition: border-radius 0.3s ease !important;
+        }
+
+        .shadow {
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+        }
+    </style>
+    <!--end of Custom CSS-->
+
+    <div class="container-fluid border-0 px-0">
+        <!--navbar-->
+        <nav class="navbar navbar-light bg-white px-5 shadow">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#">Admin Dashboard</a>
+                <form class="d-flex justify-content-md-end">
+                    <button class="btn btn-outline-dark" type="submit" disabled>Logout</button>
+                </form>
+            </div>
+        </nav>
+        <!--end of navbar-->
+
+        <!-- Vertically centered modal for edit products-->
+        <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+            aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="staticBackdropLabel">Update Product</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!--product register form-->
+                        <div class="form m-3">
+                            <div class="mb-5">
+                                <label for="proName" class="form-label">&nbsp;&nbsp;Product Name</label>
+                                <input type="text" class="form-control" id="proName" placeholder="product-name">
+                            </div>
+                            <div class="mb-5">
+                                <label for="proPrice" class="form-label">&nbsp;&nbsp;Price</label>
+                                <input type="number" class="form-control" id="proPrice" placeholder="0">
+                            </div>
+                            <div class="mb-5">
+                                <label for="proColor" class="form-label">&nbsp;&nbsp;Product Color</label>
+                                <input type="text" class="form-control" id="proColor" placeholder="product-color">
+                            </div>
+                        </div>
+                        <!--end of product register form-->
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="closeModalButton">Close</button>
+                        <button type="button" class="btn btn-dark px-4" id="updateBtn">Update</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- end of modal-->
+
+        <!--product details-->
+        <div class="card m-4 p-2">
+            <div class="card-body">
+                <div class="row">
+                    <h5 class="card-title col-10">Product Details</h5>
+                    <button class="btn btn-dark col-2" type="submit" data-bs-toggle="offcanvas"
+                        data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">+ Add Product</button>
+                    <!--offcanvas-->
+                    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight"
+                        aria-labelledby="offcanvasRightLabel">
+                        <div class="offcanvas-header">
+                            <h5 id="offcanvasTopLabel">Product Details</h5>
+                            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"
+                                aria-label="Close" id="closeRegFormButton"></button>
+                        </div>
+                        <div class="offcanvas-body">
+                            <!--product register form-->
+                            <div class="form m-3">
+                                <div class="mb-5">
+                                    <label for="proName" class="form-label">&nbsp;&nbsp;Product Name</label>
+                                    <input type="text" class="form-control" id="proNameReg" placeholder="product-name">
+                                </div>
+                                <div class="mb-5">
+                                    <label for="proPrice" class="form-label">&nbsp;&nbsp;Price</label>
+                                    <input type="number" class="form-control" id="proPriceReg" placeholder="0">
+                                </div>
+                                <div class="mb-5">
+                                    <label for="proColor" class="form-label">&nbsp;&nbsp;Product Color</label>
+                                    <input type="text" class="form-control" id="proColorReg" placeholder="product-color">
+                                </div>
+                                <div class="text-center mb-4">
+                                    <button type="button" class="btn btn-dark px-4" id="proRegBtn">Add Product</button>
+                                </div>
+                            </div>
+                            <!--end of product register form-->
+                        </div>
+                    </div>
+                    <!--end of offcanvas-->
+                </div>
+                <hr>
+                <div class="my-4 mx-5">
+                    <table class="table">
+                        <thead class="table-dark text-center">
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Product Name</th>
+                                <th scope="col">Price</th>
+                                <th scope="col">Product Color</th>
+                                <th scope="col"></th>
+                                <th scope="col"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="productTableBody" class="text-center">
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+        <!--end of product details-->
+
+        <!--user details-->
+        <div class="card m-4 p-2">
+            <div class="card-body">
+                <div class="row">
+                    <h5 class="card-title col-10">User Details</h5>
+                    <!--<button class="btn btn-outline-dark col-2" type="submit" >+ Add User</button>-->
+                </div>
+                <hr>
+                <div class="my-4 mx-5">
+                    <table class="table table-striped">
+                        <thead class="table-light">
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">First Name</th>
+                                <th scope="col">Last Name</th>
+                                <th scope="col">Email</th>
+                                <th scope="col"></th>
+                                <th scope="col"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="userTableBody">
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+        <!--end of user details-->
+    </div>
+
+
+    <!--firebase-->
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, deleteUser } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getDatabase, set, ref, push, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+        // TODO: Add SDKs for Firebase products that you want to use
+        // https://firebase.google.com/docs/web/setup#available-libraries
+
+        // web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBdqJaDKtNdAHEaSX0hlzyRbWk2Ojr8-fY",
+            authDomain: "wa02-new.firebaseapp.com",
+            projectId: "wa02-new",
+            storageBucket: "wa02-new.appspot.com",
+            messagingSenderId: "1071648463564",
+            appId: "1:1071648463564:web:98656bebc4a6e034c88069",
+            databaseURL: "https://wa02-new-default-rtdb.asia-southeast1.firebasedatabase.app"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        const auth = getAuth();
+
+    // Products    
+        /* -- save product details in db -- */
+        const proRegBtn = document.getElementById('proRegBtn');
+
+        proRegBtn.addEventListener('click', (e) => {
+
+            var productName = document.getElementById('proNameReg').value;
+            var productPrice = document.getElementById('proPriceReg').value;
+            var productColor = document.getElementById('proColorReg').value;
+
+            //save product details
+            const productRef = ref(database, 'products');
+            const newProductRef = push(productRef); // Generate a new unique key
+            const productId = newProductRef.key;
+
+            set(newProductRef, {
+                productId: productId,
+                productName: productName,
+                productPrice: productPrice,
+                productColor: productColor
+            });
+
+            alert('Product Added');
+            document.getElementById('closeRegFormButton').click();
+        })
+        /* -- end of save product details in db -- */
+
+        /* -- show product details -- */
+        function renderProduct(product, index) {
+            const productTableBody = document.getElementById('productTableBody');
+
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <th class="align-middle" scope="row">${index}</th>
+                <td class="align-middle">${product.productName}</td>
+                <td class="align-middle">${product.productPrice}</td>
+                <td class="align-middle">${product.productColor}</td>
+                <td class="text-center">
+                    <button class="btn btn-outline-dark editProduct" type="button" data-product-id="${product.productId}" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Edit</button>
+                </td>
+                <td class="text-center">
+                    <button class="btn btn-outline-danger deleteProduct" type="button" data-product-id="${product.productId}">Delete</button>
+                </td>
+            `;
+
+            // Append the row to the table body
+            productTableBody.appendChild(row);
+        }
+
+        // Function to fetch and render product details from the database
+        function fetchAndRenderProducts() {
+            const productsRef = ref(database, 'products');
+
+            // Listen for changes to the products node
+            onValue(productsRef, (snapshot) => {
+                const data = snapshot.val();
+                let index = 1;
+
+                // Clear previous product entries
+                document.getElementById('productTableBody').innerHTML = '';
+
+                // Render each product
+                for (const productId in data) {
+                    renderProduct(data[productId], index);
+                    index++;
+                }
+            });
+        }
+        /* -- end of show product details -- */
+
+        /* -- update and delete product details -- */
+        let productId;
+
+        // Function to handle edit button click
+        document.addEventListener('click', function (e) {
+            if (e.target && e.target.classList.contains('editProduct')) {
+                // Retrieve productId from the clicked edit button
+                productId = e.target.dataset.productId;
+
+                // Call a function to fetch product details and populate the modal for editing
+                editProductModal(productId);
+            } else if (e.target && e.target.classList.contains('deleteProduct')) {
+                const delProductId = e.target.dataset.productId;
+                deleteProduct(delProductId);
+            }
+        });
+
+        // Function to fetch product details and populate the modal for editing
+        function editProductModal(productId) {
+            const productRef = ref(database, `products/${productId}`);
+            // Retrieve product details
+            onValue(productRef, (snapshot) => {
+                const product = snapshot.val();
+                // Populate modal fields with product details for editing
+                document.getElementById('proName').value = product.productName;
+                document.getElementById('proPrice').value = product.productPrice;
+                document.getElementById('proColor').value = product.productColor;
+            });
+        }
+
+        // Function to edit product details
+        function editProduct(productId, newData) {
+            // Reference to the product node in the database
+            const productRef = ref(database, `products/${productId}`);
+            // Update the database with the new data
+            update(productRef, newData)
+                .then(() => {
+                    alert('Product Updated Successfully')
+                    document.getElementById('closeModalButton').click();
+                    //modal.hide();
+                })
+                .catch((error) => {
+                    console.error("Error updating product details:", error);
+                });
+        }
+        
+        // Add an event listener to the "Update" button
+        const updateBtn = document.getElementById('updateBtn');
+        updateBtn.addEventListener('click', (e) => {
+            const newData = {
+                productName: document.getElementById('proName').value,
+                productPrice: document.getElementById('proPrice').value,
+                productColor: document.getElementById('proColor').value
+            };
+
+            // Call the editProduct function with productId and newData as parameters
+            editProduct(productId, newData);
+        });
+
+
+        // //Function to delete a product
+        let delProductId;
+
+        function deleteProduct(productId) {
+            const productRef = ref(database, `products/${productId}`);
+
+            // Remove the product from the database
+            remove(productRef)
+                .then(() => {
+                    alert('Product Deleted Successfully')
+                    // Optionally update the UI or show a success message
+                })
+                .catch((error) => {
+                    console.error("Error deleting product:", error);
+                    // Handle errors or show an error message
+                });
+        }
+
+        /* -- end of update and delete product details -- */
+
+    
+    // User    
+        /* -- show user details -- */
+        function renderUser(user, index) {
+            const productTableBody = document.getElementById('userTableBody');
+
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <th class="align-middle" scope="row">${index}</th>
+                <td class="align-middle">${user.fname}</td>
+                <td class="align-middle">${user.lname}</td>
+                <td class="align-middle">${user.email}</td>
+                <td class="text-center">
+                    <button class="btn btn-outline-dark" type="button" onclick="editUser('${user.userId}')" disabled>Edit</button>
+                </td>
+                <td class="text-center">
+                    <button class="btn btn-outline-danger delBtn" type="button" id="delBtn")" disabled>Delete</button>
+                </td>
+            `;
+
+            // Append the row to the table body
+            userTableBody.appendChild(row);
+        }
+
+        // Function to fetch and render user details from the database
+        function fetchAndRenderUsers() {
+            const usersRef = ref(database, 'users');
+
+            // Listen for changes to the users node
+            onValue(usersRef, (snapshot) => {
+                const data = snapshot.val();
+                let index = 1;
+
+                // Clear previous user entries
+                document.getElementById('userTableBody').innerHTML = '';
+
+                // Render each user
+                for (const userId in data) {
+                    renderUser(data[userId], index);
+                    index++;
+                }
+            });
+        }
+        /* -- end of show user details -- */
+
+
+    /* Call the function to fetch and render products and users when the page loads */
+        window.onload = function () {
+            fetchAndRenderProducts();
+            fetchAndRenderUsers();
+        };
+
+    </script>
+    <!--end of firebase-->
+
+
+    <!--Bootsrtap JS-->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>
