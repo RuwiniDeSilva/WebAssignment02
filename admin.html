@@ -125,6 +125,10 @@
                                     <label for="proColor" class="form-label">&nbsp;&nbsp;Product Color</label>
                                     <input type="text" class="form-control" id="proColorReg" placeholder="product-color">
                                 </div>
+                                <div class="mb-5">
+                                    <label for="proImage" class="form-label">&nbsp;&nbsp;Product Image</label>
+                                    <input type="file" class="form-control" id="proImageReg" placeholder="product-image" name="img" accept="image/*">
+                                </div>
                                 <div class="text-center mb-4">
                                     <button type="button" class="btn btn-dark px-4" id="proRegBtn">Add Product</button>
                                 </div>
@@ -143,6 +147,7 @@
                                 <th scope="col">Product Name</th>
                                 <th scope="col">Price</th>
                                 <th scope="col">Product Color</th>
+                                <th scope="col"></th>
                                 <th scope="col"></th>
                                 <th scope="col"></th>
                             </tr>
@@ -256,6 +261,9 @@
                 <td class="align-middle">${product.productName}</td>
                 <td class="align-middle">${product.productPrice}</td>
                 <td class="align-middle">${product.productColor}</td>
+                <td class="text-center">
+                    <button class="btn btn-outline-dark editProduct" type="button" data-product-id="${product.productId}" data-toggle="popover">View Image</button>
+                </td>
                 <td class="text-center">
                     <button class="btn btn-outline-dark editProduct" type="button" data-product-id="${product.productId}" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Edit</button>
                 </td>
